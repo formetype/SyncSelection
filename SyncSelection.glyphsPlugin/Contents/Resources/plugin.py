@@ -21,7 +21,7 @@ class SyncSelection(GeneralPlugin):
 			'en': u'Sync Layer Selections', 
 			'de': u'Auswahl zwischen Ebenen synchronisieren',
 			'es': u'Sincronizar selección entre capas',
-			'fr': u'Synchroniser la sélection entre les couches'
+			'fr': u'Synchroniser les sélections entre les calques'
 		})
 		NSUserDefaults.standardUserDefaults().registerDefaults_(
 			{
