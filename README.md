@@ -6,7 +6,7 @@ It will keep your selection in sync between multiple layers of the same glyph. I
 
 After installation, you can toggle syncing via *Edit > Sync Layer Selections* (**de:** Auswahl zwischen Ebenen synchronisieren, **es:** Sincronizar selección entre capas, **fr:** Synchroniser la sélection entre les couches).
 
-![SyncSelectionScreenshot](SyncSelectionScreenshot.png){:height="50%" width="50%"}
+![SyncSelectionScreenshot](SyncSelectionScreenshot.png)
 
 The plug-in assumes compatibility between layers, and will sync selections as far as possible. It always cancels existing selections on other layers.
 
