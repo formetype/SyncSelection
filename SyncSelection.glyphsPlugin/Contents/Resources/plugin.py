@@ -20,7 +20,7 @@ class SyncSelection(GeneralPlugin):
 		self.name = Glyphs.localize({
 			'en': u'Sync Layer Selections', 
 			'de': u'Auswahl zwischen Ebenen synchronisieren',
-			'es': u'Sincronizar selección entre capas',
+			'es': u'Sincronizar selección de todas las capas',
 			'fr': u'Synchroniser les sélections entre les calques'
 		})
 		NSUserDefaults.standardUserDefaults().registerDefaults_(
