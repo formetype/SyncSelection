@@ -8,7 +8,9 @@ After installation, you can toggle syncing via *Edit > Sync Layer Selections* (*
 
 ![SyncSelectionScreenshot](SyncSelectionScreenshot.png)
 
-The plug-in assumes compatibility between layers, and will sync selections as far as possible. It always cancels existing selections on other layers.
+The plug-in assumes compatibility between layers, and will sync selections as far as possible. Careful: It always cancels existing selections on other layers.
+
+*Attention:* syncing is disabled when the *Select All Layers* tool (Shift-V) is active, because it assumes you want to handle cross-layer selection yourself.
 
 ### Installation
 

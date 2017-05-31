@@ -73,48 +73,59 @@ class SyncSelection(GeneralPlugin):
 			print traceback.format_exc()
 	
 	def keepSelectionInSync(self):
+		# only sync when there is a document and a tab is open:
 		if Glyphs.font and Glyphs.font.currentTab:
-			layer = Glyphs.font.currentTab.activeLayer()
-			if layer:
-				glyph = layer.glyph()
-				selection = layer.selection
-				otherLayers = [l for l in glyph.layers if l != layer]
+			
+			# do not sync when Select All Layers tool is active:
+			try:
+				toolClass = Glyphs.currentDocument.windowController().toolEventHandler().className()
+			except:
+				toolClass = None
+				
+			if toolClass != "GlyphsToolSelectAllLayers":
+				
+				# only sync when a glyph layer is open for editing:
+				layer = Glyphs.font.currentTab.activeLayer()
+				if layer:
+					glyph = layer.glyph()
+					selection = layer.selection
+					otherLayers = [l for l in glyph.layers if l != layer]
 
-				# reset selection in other layers:
-				for otherLayer in otherLayers:
-					otherLayer.selection = None
+					# reset selection in other layers:
+					for otherLayer in otherLayers:
+						otherLayer.selection = None
 
-				# step through other layers and sync selection:
-				if selection:
-					if otherLayers:
+					# step through other layers and sync selection:
+					if selection:
+						if otherLayers:
 						
-						# sync anchors:
-						for thisAnchor in layer.anchors:
-							if thisAnchor in selection:
-								for otherLayer in otherLayers:
-									try:
-										otherLayer.selection.append(otherLayer.anchors[thisAnchor.name])
-									except:
-										pass
-					
-						# sync node selection:
-						for i,thisPath in enumerate(layer.paths):
-							for j,thisNode in enumerate(thisPath.nodes):
-								if thisNode in selection:
+							# sync anchors:
+							for thisAnchor in layer.anchors:
+								if thisAnchor in selection:
 									for otherLayer in otherLayers:
 										try:
-											otherLayer.selection.append(otherLayer.paths[i].nodes[j])
+											otherLayer.selection.append(otherLayer.anchors[thisAnchor.name])
 										except:
 											pass
+					
+							# sync node selection:
+							for i,thisPath in enumerate(layer.paths):
+								for j,thisNode in enumerate(thisPath.nodes):
+									if thisNode in selection:
+										for otherLayer in otherLayers:
+											try:
+												otherLayer.selection.append(otherLayer.paths[i].nodes[j])
+											except:
+												pass
 						
-						# sync selection of components:
-						for i,thisComponent in enumerate(layer.components):
-							if thisComponent in selection:
-								for otherLayer in otherLayers:
-									try:
-										otherLayer.selection.append(otherLayer.components[i])
-									except:
-										pass
+							# sync selection of components:
+							for i,thisComponent in enumerate(layer.components):
+								if thisComponent in selection:
+									for otherLayer in otherLayers:
+										try:
+											otherLayer.selection.append(otherLayer.components[i])
+										except:
+											pass
 					
 	
 	def __file__(self):
