@@ -86,7 +86,7 @@ class SyncSelection(GeneralPlugin):
 				
 				# only sync when a glyph layer is open for editing:
 				layer = Glyphs.font.currentTab.activeLayer()
-				if layer:
+				if layer and layer.className() != "GSBackgroundLayer":
 					glyph = layer.glyph()
 					selection = layer.selection
 					otherLayers = [l for l in glyph.layers if l != layer]
