@@ -89,7 +89,7 @@ class SyncSelection(GeneralPlugin):
 				if layer and layer.className() != "GSBackgroundLayer":
 					glyph = layer.glyph()
 					selection = layer.selection
-					otherLayers = [l for l in glyph.layers if l != layer]
+					otherLayers = [l for l in glyph.layers if l != layer and l.compareString() == layer.compareString()]
 
 					# reset selection in other layers:
 					for otherLayer in otherLayers:
