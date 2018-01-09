@@ -35,6 +35,12 @@ class SyncSelection(GeneralPlugin):
 		if Glyphs.defaults["com.mekkablue.SyncSelection.state"]:
 			Glyphs.addCallback(self.keepSelectionInSync, UPDATEINTERFACE)
 	
+	def __del__(self):
+		try:
+			Glyphs.removeCallback(self.keepSelectionInSync, UPDATEINTERFACE)
+		except:
+			pass # exit gracefully
+	
 	def toggleSelectionSync(self, sender):
 		if Glyphs.defaults["com.mekkablue.SyncSelection.state"]:
 			Glyphs.defaults["com.mekkablue.SyncSelection.state"] = False

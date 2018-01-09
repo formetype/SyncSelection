@@ -17,17 +17,17 @@
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleVersion</key>
-	<string>6</string>
+	<string>7</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.2</string>
+	<string>1.2.1</string>
 	<key>UpdateFeedURL</key>
 	<string>https://raw.githubusercontent.com/mekkablue/SyncSelection/master/SyncSelection.glyphsPlugin/Contents/Info.plist</string>
 	<key>productPageURL</key>
 	<string>https://github.com/mekkablue/SyncSelection</string>
 	<key>productReleaseNotes</key>
-	<string>Compatibility update, performance improvements.</string>
+	<string>Performance improvement over longer period of use.</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright, Rainer Erich Scheichelbauer, 2017</string>
+	<string>Copyright, Rainer Erich Scheichelbauer, 2017-2018</string>
 	<key>NSPrincipalClass</key>
 	<string>SyncSelection</string>
 	<key>PyMainFileNames</key>
