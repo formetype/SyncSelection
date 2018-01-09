@@ -11,9 +11,9 @@
 #
 ###########################################################################################################
 
-
+import objc
+from GlyphsApp import *
 from GlyphsApp.plugins import *
-from GlyphsApp import UPDATEINTERFACE
 
 class SyncSelection(GeneralPlugin):
 	def settings(self):
@@ -21,58 +21,34 @@ class SyncSelection(GeneralPlugin):
 			'en': u'Sync Layer Selections', 
 			'de': u'Auswahl zwischen Ebenen synchronisieren',
 			'es': u'Sincronizar selección de todas las capas',
-			'fr': u'Synchroniser les sélections entre les calques'
+			'fr': u'Synchroniser les sélections entre les calques',
 		})
-		NSUserDefaults.standardUserDefaults().registerDefaults_(
-			{
-				"com.mekkablue.SyncSelection.state": False
-			}
-		)
 	
 	def start(self):
-		try: 
-			# new API in Glyphs 2.3.1-910
-			menuItem = NSMenuItem(self.name, self.toggleSelectionSync)
-			menuItem.setState_(bool(Glyphs.defaults["com.mekkablue.SyncSelection.state"]))
-			Glyphs.menu[EDIT_MENU].append(menuItem)
-		except:
-			# old code, don't know if it works, likely to be removed soon:
-			mainMenu = Glyphs.mainMenu()
-			s = objc.selector(self.toggleSelectionSync,signature='v@:@')
-			menuItem = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(self.name, s, "")
-			menuItem.setTarget_(self)
-			menuItem.setState_(bool(Glyphs.defaults["com.mekkablue.SyncSelection.state"]))
-			mainMenu.itemWithTag_(5).submenu().addItem_(menuItem)
+		print "start"
+		Glyphs.registerDefault("com.mekkablue.SyncSelection.state", False)
+
+		menuItem = NSMenuItem(self.name, self.toggleSelectionSync)
+		menuItem.setState_(bool(Glyphs.defaults["com.mekkablue.SyncSelection.state"]))
+		Glyphs.menu[EDIT_MENU].append(menuItem)
 		
 		if Glyphs.defaults["com.mekkablue.SyncSelection.state"]:
-			self.addSyncCallback()
+			Glyphs.addCallback(self.keepSelectionInSync, UPDATEINTERFACE)
 	
 	def toggleSelectionSync(self, sender):
 		if Glyphs.defaults["com.mekkablue.SyncSelection.state"]:
 			Glyphs.defaults["com.mekkablue.SyncSelection.state"] = False
-			self.removeSyncCallback()
+			Glyphs.removeCallback(self.keepSelectionInSync, UPDATEINTERFACE)
 		else:
 			Glyphs.defaults["com.mekkablue.SyncSelection.state"] = True
-			self.addSyncCallback()
+			Glyphs.addCallback(self.keepSelectionInSync, UPDATEINTERFACE)
+			
 		
 		currentState = Glyphs.defaults["com.mekkablue.SyncSelection.state"]
 		Glyphs.menu[EDIT_MENU].submenu().itemWithTitle_(self.name).setState_(currentState)
-
-	def addSyncCallback(self):
-		try:
-			NSNotificationCenter.defaultCenter().addObserver_selector_name_object_(self, self.keepSelectionInSync, UPDATEINTERFACE, objc.nil)
-		except Exception as e:
-			import traceback
-			print traceback.format_exc()
+		
 	
-	def removeSyncCallback(self):
-		try:
-			NSNotificationCenter.defaultCenter().removeObserver_(self)
-		except Exception as e:
-			import traceback
-			print traceback.format_exc()
-	
-	def keepSelectionInSync(self):
+	def keepSelectionInSync(self, sender):
 		# only sync when there is a document and a tab is open:
 		if Glyphs.font and Glyphs.font.currentTab:
 			
