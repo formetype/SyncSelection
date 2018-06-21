@@ -37,6 +37,7 @@ class SyncSelection(GeneralPlugin):
 		if Glyphs.defaults["com.mekkablue.SyncSelection.state"]:
 			Glyphs.addCallback(self.keepSelectionInSync, DRAWFOREGROUND)
 			self.counter+=1
+		self.isSyncing = False
 		
 	def __del__(self):
 		try:
@@ -71,8 +72,8 @@ class SyncSelection(GeneralPlugin):
 				toolClass = Glyphs.currentDocument.windowController().toolEventHandler().className()
 			except:
 				toolClass = None
-			if toolClass != "GlyphsToolSelectAllLayers":
-				
+			if toolClass != "GlyphsToolSelectAllLayers" and not self.isSyncing:
+				self.isSyncing = True
 				# only sync when a glyph layer is open for editing:
 				layer = Glyphs.font.currentTab.activeLayer()
 				if layer and not "Background" in layer.className():
@@ -120,6 +121,7 @@ class SyncSelection(GeneralPlugin):
 										except:
 											pass
 
+				self.isSyncing = False
 	
 	def __file__(self):
 		"""Please leave this method unchanged"""
