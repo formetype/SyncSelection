@@ -24,6 +24,7 @@ class SyncSelection(GeneralPlugin):
 			'de': u'Auswahl zwischen Ebenen synchronisieren',
 			'es': u'Sincronizar selección de todas las capas',
 			'fr': u'Synchroniser les sélections entre les calques',
+			'ko': u"선택한 레이어 동기화"
 		})
 	
 	def start(self):
