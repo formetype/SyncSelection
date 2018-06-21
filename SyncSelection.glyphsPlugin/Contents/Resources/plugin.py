@@ -28,39 +28,46 @@ class SyncSelection(GeneralPlugin):
 		})
 	
 	def start(self):
+		self.isSyncing = False
+		self.hasNotification = False
+		
 		Glyphs.registerDefault("com.mekkablue.SyncSelection.state", False)
 
-		menuItem = NSMenuItem(self.name, self.toggleSelectionSync)
-		menuItem.setState_(bool(Glyphs.defaults["com.mekkablue.SyncSelection.state"]))
-		Glyphs.menu[EDIT_MENU].append(menuItem)
+		self.menuItem = NSMenuItem(self.name, self.toggleSelectionSync)
+		Glyphs.menu[EDIT_MENU].append(self.menuItem)
 		
-		if Glyphs.defaults["com.mekkablue.SyncSelection.state"]:
-			Glyphs.addCallback(self.keepSelectionInSync, DRAWFOREGROUND)
-			self.counter+=1
-		self.isSyncing = False
-		
+		self.setSelectionSyncState(self.getSelectionSyncState())
+
+	
 	def __del__(self):
 		try:
-			Glyphs.removeCallback(self.keepSelectionInSync, DRAWFOREGROUND)
-			self.counter-=1
+			if self.hasNotification:
+				Glyphs.removeCallback(self.keepSelectionInSync, DRAWFOREGROUND)
+				self.hasNotification = False
 		except:
 			# exit gracefully, but do report:
 			import traceback
 			print traceback.format_exc()
 	
 	def toggleSelectionSync(self, sender):
-		if Glyphs.defaults["com.mekkablue.SyncSelection.state"]:
-			Glyphs.defaults["com.mekkablue.SyncSelection.state"] = False
-			Glyphs.removeCallback(self.keepSelectionInSync, DRAWFOREGROUND)
-			self.counter-=1
+		self.setSelectionSyncState(not self.getSelectionSyncState())
+	
+	def getSelectionSyncState(self):
+		return Glyphs.boolDefaults["com.mekkablue.SyncSelection.state"]
+	
+	def setSelectionSyncState(self, state):
+		Glyphs.boolDefaults["com.mekkablue.SyncSelection.state"] = bool(state)
+		if not state:
+			if self.hasNotification:
+				Glyphs.removeCallback(self.keepSelectionInSync, DRAWFOREGROUND)
+				self.hasNotification = False
 		else:
-			Glyphs.defaults["com.mekkablue.SyncSelection.state"] = True
-			Glyphs.addCallback(self.keepSelectionInSync, DRAWFOREGROUND)
-			self.counter+=1
+			if not self.hasNotification:
+				Glyphs.addCallback(self.keepSelectionInSync, DRAWFOREGROUND)
+				self.hasNotification = True
 		
-		currentState = ONSTATE if Glyphs.defaults["com.mekkablue.SyncSelection.state"] else OFFSTATE
-		Glyphs.menu[EDIT_MENU].submenu().itemWithTitle_(self.name).setState_(currentState)
-		
+		currentState = ONSTATE if state else OFFSTATE
+		self.menuItem.setState_(currentState)
 	
 	def keepSelectionInSync(self, sender, blackAndScale=None):
 		
@@ -84,7 +91,7 @@ class SyncSelection(GeneralPlugin):
 							if l.layerId != layer.layerId 
 							and l.compareString() == layer.compareString()
 						]
-									
+					
 					# reset selection in other layers:
 					for otherLayer in otherLayers:
 						otherLayer.selection = None
