@@ -25,7 +25,7 @@ class SyncSelection(GeneralPlugin):
 			'es': u'Sincronizar selección de todas las capas',
 			'fr': u'Synchroniser les sélections entre les calques',
 			'ko': u"선택한 레이어 동기화",
-			'zh': u"所选内容应用于所有图层",
+			'zh': u"🧦所选内容应用于所有图层",
 		})
 	
 	def start(self):
