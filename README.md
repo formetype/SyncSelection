@@ -4,7 +4,7 @@ This is a plugin for the [Glyphs font editor](http://glyphsapp.com/) by Georg Se
 
 It will keep your selection in sync between multiple layers of the same glyph. I.e., if you select the first path of the Regular layer, the first paths of Bold and Light are also selected. Works for path nodes, anchors and components.
 
-After installation, you can toggle syncing via *Edit > Sync Layer Selections* (**de:** Auswahl zwischen Ebenen synchronisieren, **es:** Sincronizar selección entre capas, **fr:** Synchroniser les sélections entre les calques).
+After installation, you can toggle syncing via *Edit > Sync Layer Selections* (de: *Auswahl zwischen Ebenen synchronisieren,* es: *Sincronizar selección entre capas,* fr: *Synchroniser les sélections entre les calques,* zh: 🧦所选内容应用于所有图层s).
 
 ![SyncSelectionScreenshot](SyncSelectionScreenshot.png)
 
