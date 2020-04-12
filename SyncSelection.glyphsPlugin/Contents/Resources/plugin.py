@@ -1,4 +1,5 @@
 # encoding: utf-8
+from __future__ import division, print_function, unicode_literals
 
 ###########################################################################################################
 #
@@ -18,6 +19,7 @@ from GlyphsApp.plugins import *
 class SyncSelection(GeneralPlugin):
 	counter=0
 	
+	@objc.python_method
 	def settings(self):
 		self.name = Glyphs.localize({
 			'en': u'Sync Layer Selections', 
@@ -28,49 +30,52 @@ class SyncSelection(GeneralPlugin):
 			'zh': u"🧦所选内容应用于所有图层",
 		})
 	
+	@objc.python_method
 	def start(self):
 		self.isSyncing = False
 		self.hasNotification = False
 		
 		Glyphs.registerDefault("com.mekkablue.SyncSelection.state", False)
 
-		self.menuItem = NSMenuItem(self.name, self.toggleSelectionSync)
+		self.menuItem = NSMenuItem(self.name, self.toggleSelectionSync_)
 		Glyphs.menu[EDIT_MENU].append(self.menuItem)
 		
 		self.setSelectionSyncState(self.getSelectionSyncState())
-
 	
+	@objc.python_method
 	def __del__(self):
 		try:
 			if self.hasNotification:
-				Glyphs.removeCallback(self.keepSelectionInSync, DRAWFOREGROUND)
+				Glyphs.removeCallback(self.keepSelectionInSync_, DRAWFOREGROUND)
 				self.hasNotification = False
 		except:
 			# exit gracefully, but do report:
 			import traceback
-			print traceback.format_exc()
+			print(traceback.format_exc())
 	
-	def toggleSelectionSync(self, sender):
+	def toggleSelectionSync_(self, sender):
 		self.setSelectionSyncState(not self.getSelectionSyncState())
 	
+	@objc.python_method
 	def getSelectionSyncState(self):
 		return Glyphs.boolDefaults["com.mekkablue.SyncSelection.state"]
 	
+	@objc.python_method
 	def setSelectionSyncState(self, state):
 		Glyphs.boolDefaults["com.mekkablue.SyncSelection.state"] = bool(state)
 		if not state:
 			if self.hasNotification:
-				Glyphs.removeCallback(self.keepSelectionInSync, DRAWFOREGROUND)
+				Glyphs.removeCallback(self.keepSelectionInSync_, DRAWFOREGROUND)
 				self.hasNotification = False
 		else:
 			if not self.hasNotification:
-				Glyphs.addCallback(self.keepSelectionInSync, DRAWFOREGROUND)
+				Glyphs.addCallback(self.keepSelectionInSync_, DRAWFOREGROUND)
 				self.hasNotification = True
 		
 		currentState = ONSTATE if state else OFFSTATE
 		self.menuItem.setState_(currentState)
 	
-	def keepSelectionInSync(self, sender, blackAndScale=None):
+	def keepSelectionInSync_(self, sender):
 		
 		# only sync when a document and a tab is open:
 		if Glyphs.font and Glyphs.font.currentTab:
@@ -106,31 +111,61 @@ class SyncSelection(GeneralPlugin):
 								if thisAnchor in selection:
 									for otherLayer in otherLayers:
 										try:
-											otherLayer.selection.append(otherLayer.anchors[thisAnchor.name])
+											otherLayer.selection.append(otherLayer.anchorForName_(thisAnchor.name))
 										except:
 											pass
-							
-							# sync node selection:
-							for i,thisPath in enumerate(layer.paths):
-								for j,thisNode in enumerate(thisPath.nodes):
-									if thisNode in selection:
+							try:
+								# GLYPHS 3:
+								for i, thisShape in enumerate(layer.shapes):
+									# sync node selection:
+									if type(thisShape) is GSPath:
+										for j,thisNode in enumerate(thisShape.nodes):
+											if thisNode in selection:
+												for otherLayer in otherLayers:
+													try:
+														otherLayer.selection.append(otherLayer.shapes[i].nodes[j])
+													except:
+														pass
+									# sync component selection:
+									elif type(thisShape) is GSComponent:
 										for otherLayer in otherLayers:
 											try:
-												otherLayer.selection.append(otherLayer.paths[i].nodes[j])
+												otherLayer.selection.append(otherLayer.shapes[i])
 											except:
 												pass
+												
+								# sync corner, cap and other special components:
+								for i, thisHint in enumerate(layer.hints):
+									try:
+										if not thisHint.type in (TOPGHOST, STEM, BOTTOMGHOST, TTANCHOR, TTSTEM, TTALIGN, TTINTERPOLATE, TTDIAGONAL, TTDELTA):
+											otherLayer.selection.append(otherLayer.hints[i])
+									except:
+										pass
+							except:
+								# GLYPHS 2:
 							
-							# sync selection of components:
-							for i,thisComponent in enumerate(layer.components):
-								if thisComponent in selection:
-									for otherLayer in otherLayers:
-										try:
-											otherLayer.selection.append(otherLayer.components[i])
-										except:
-											pass
+								# sync node selection:
+								for i,thisPath in enumerate(layer.paths):
+									for j,thisNode in enumerate(thisPath.nodes):
+										if thisNode in selection:
+											for otherLayer in otherLayers:
+												try:
+													otherLayer.selection.append(otherLayer.paths[i].nodes[j])
+												except:
+													pass
+							
+								# sync selection of components:
+								for i,thisComponent in enumerate(layer.components):
+									if thisComponent in selection:
+										for otherLayer in otherLayers:
+											try:
+												otherLayer.selection.append(otherLayer.components[i])
+											except:
+												pass
 
 				self.isSyncing = False
 	
+	@objc.python_method
 	def __file__(self):
 		"""Please leave this method unchanged"""
 		return __file__
