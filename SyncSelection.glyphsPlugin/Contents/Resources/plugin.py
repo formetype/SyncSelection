@@ -46,7 +46,7 @@ class SyncSelection(GeneralPlugin):
 	def __del__(self):
 		try:
 			if self.hasNotification:
-				Glyphs.removeCallback(self.keepSelectionInSync_, DRAWFOREGROUND)
+				Glyphs.removeCallback(self.keepSelectionInSyncWithLayer_blackAndScale_, DRAWFOREGROUND)
 				self.hasNotification = False
 		except:
 			# exit gracefully, but do report:
@@ -65,18 +65,17 @@ class SyncSelection(GeneralPlugin):
 		Glyphs.boolDefaults["com.mekkablue.SyncSelection.state"] = bool(state)
 		if not state:
 			if self.hasNotification:
-				Glyphs.removeCallback(self.keepSelectionInSync_, DRAWFOREGROUND)
+				Glyphs.removeCallback(self.keepSelectionInSyncWithLayer_blackAndScale_, DRAWFOREGROUND)
 				self.hasNotification = False
 		else:
 			if not self.hasNotification:
-				Glyphs.addCallback(self.keepSelectionInSync_, DRAWFOREGROUND)
+				Glyphs.addCallback(self.keepSelectionInSyncWithLayer_blackAndScale_, DRAWFOREGROUND)
 				self.hasNotification = True
 		
 		currentState = ONSTATE if state else OFFSTATE
 		self.menuItem.setState_(currentState)
 	
-	def keepSelectionInSync_(self, sender):
-		
+	def keepSelectionInSyncWithLayer_blackAndScale_(self, layer=None, blackAndScale=None):
 		# only sync when a document and a tab is open:
 		if Glyphs.font and Glyphs.font.currentTab:
 			
